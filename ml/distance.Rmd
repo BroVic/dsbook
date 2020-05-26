@@ -6,9 +6,8 @@ Many of the analyses we perform with high-dimensional data relate directly or in
 
 As a review, let's define the distance between two points, $A$ and $B$, on a Cartesian plane.
 
-```{r euclidean-distance, echo=FALSE, out.width="50%"}
-library(rafalib)
-mypar()
+```{r euclidean-distance, echo=FALSE, out.width="35%"}
+rafalib::mypar()
 plot(c(0,1,1),c(0,0,1),pch=16,cex=2,xaxt="n",yaxt="n",xlab="",ylab="",bty="n",xlim=c(-0.25,1.25),ylim=c(-0.25,1.25))
 lines(c(0,1,1,0),c(0,0,1,0))
 text(0,.2,expression(paste('(A'[x]*',A'[y]*')')),cex=1.5)
@@ -69,7 +68,7 @@ The labels for the first three observations are:
 y[1:3]
 ```
 
-The vector of predictors for each of these observations are:
+The vectors of predictors for each of these observations are:
 
 ```{r}
 x_1 <- x[1,]
@@ -116,22 +115,27 @@ as.matrix(d)[1:3,1:3]
 
 We can quickly see an image of these distances using this code: 
 
-```{r distance-image, fig.width = 4, fig.height = 4}
+```{r distance-image, fig.width = 4, fig.height = 4, eval=FALSE}
 image(as.matrix(d))
 ```
 If we order this distance by the labels, we can see that, in general, the twos are closer to each other and the sevens are closer to each other:
 
-```{r diatance-image-ordered, fig.width = 4, fig.height = 4}
+```{r eval=FALSE}
+image(as.matrix(d)[order(y), order(y)])
+```
+
+```{r diatance-image-ordered, fig.width = 4, fig.height = 4, out.width="50%", echo=FALSE}
+rafalib::mypar()
 image(as.matrix(d)[order(y), order(y)])
 ```
 
 One thing we notice here is that there appears to be more uniformity in how the sevens are drawn, since they appear to be closer (more red) to other sevens than twos are to other twos.
 
-### Predictor Space {#predictor-space}
+### Predictor space {#predictor-space}
 
 _Predictor space_ is a concept that is often used to describe machine learning algorithms. The term _space_ refers to a mathematical definition that we don't describe in detail here. Instead, we provide a simplified explanation to help understand the term predictor space when used in the context of machine learning algorithms. 
 
-The predictor space can be thought of as the collection of all possible vector of predictors that should be considered for the machine learning challenge in question. Each member of the space is referred to as a _point_. For example, in the 2 or 7 dataset, the predictor space consists of all pairs $(x_1, x_2)$ such that both $x_1$ and $x_2$ are within 0 and 1. This particular _space_ can be represented graphically as a square. In the MNIST dataset the predictor space consists of all 784-th dimensional vectors with each vector element an integer between 0 and 256. An essential element of a predictor space is that we need to define a function that provides the distance between any two points. In most cases we use Euclidean distance, but there are other possibilities. A particular case in which we can't simply use Euclidean distance is when we have categorical predictors.
+The predictor space can be thought of as the collection of all possible vectors of predictors that should be considered for the machine learning challenge in question. Each member of the space is referred to as a _point_. For example, in the 2 or 7 dataset, the predictor space consists of all pairs $(x_1, x_2)$ such that both $x_1$ and $x_2$ are within 0 and 1. This particular _space_ can be represented graphically as a square. In the MNIST dataset the predictor space consists of all 784-th dimensional vectors with each vector element an integer between 0 and 256. An essential element of a predictor space is that we need to define a function that provides the distance between any two points. In most cases we use Euclidean distance, but there are other possibilities. A particular case in which we can't simply use Euclidean distance is when we have categorical predictors.
 
 Defining a predictor space is useful in machine learning because we do things like define neighborhoods of points, as required by many smoothing techniques. For example, we can define a neighborhood as all the points that are within 2 units away from a predefined center. If the points are two-dimensional and we use Euclidean distance, this neighborhood is graphically represented as a circle with radius 2. In three dimensions the neighborhood is a sphere. We will soon learn about algorithms that partition the space into non-overlapping regions and then make different predictions for each region using the data in the region. 
 
@@ -153,6 +157,7 @@ d <- dist(t(x))
 dim(as.matrix(d))
 ```
 
+<!--
 An interesting thing to note here is that if we pick a predictor (a pixel), we can see which pixels are close. That is, the pair of pixels either have ink in the same images (small distance) or they don't (large distance). The distance between, for example, and all other pixels is given by:
 
 ```{r}
@@ -166,38 +171,38 @@ image(1:28, 1:28, matrix(d_492, 28, 28))
 ```
 
 Not surprisingly, points physically nearby are mathematically closer.
-
+-->
 
 ## Exercises 
 
 
-1. Load the following dataset:
+1\. Load the following dataset:
 
-    ```{r, eval=FALSE}
-    data("tissue_gene_expression")
-    ```
+```{r, eval=FALSE}
+data("tissue_gene_expression")
+```
 
-    This dataset includes a matrix `x` 
+This dataset includes a matrix `x` 
 
-    ```{r, eval=FALSE}
-    dim(tissue_gene_expression$x)
-    ```
+```{r, eval=FALSE}
+dim(tissue_gene_expression$x)
+```
 
-    with the gene expression measured on 500 genes for 189 biological samples representing seven different tissues. The tissue type is stored in `y`
+with the gene expression measured on 500 genes for 189 biological samples representing seven different tissues. The tissue type is stored in `y`
 
-    ```{r, eval=FALSE}
-    table(tissue_gene_expression$y)
-    ```
+```{r, eval=FALSE}
+table(tissue_gene_expression$y)
+```
 
-    Compute the distance between each observation and store it in an object `d`.
+Compute the distance between each observation and store it in an object `d`.
 
 
-2. Compare the distance between the first two observations (both cerebellums), the 39th and 40th (both colons), and the 73rd and 74th (both endometriums). See if the tissue of the same type are closer to each other.
+2\. Compare the distance between the first two observations (both cerebellums), the 39th and 40th (both colons), and the 73rd and 74th (both endometriums). See if the observations of the same tissue type are closer to each other.
 
-     
-3. We see that indeed observations of the same tissue type are closer to each other in the six tissue examples we just examined. Make a plot of all the distances using the `image` function to see if this pattern is general. Hint: Convert `d` to a matrix first.
 
-  
+3\. We see that indeed observations of the same tissue type are closer to each other in the six tissue examples we just examined. Make a plot of all the distances using the `image` function to see if this pattern is general. Hint: convert `d` to a matrix first.
+
+
 
 
 

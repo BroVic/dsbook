@@ -1,8 +1,8 @@
 # Random variables
 
-In data science, we often deal with data that is affected by chance in some way: the data comes from a random sample, the data is affected by measurement error or the data measures some outcome that is random in nature. Being able to quantify the uncertainty introduced by randomness is one of the most important jobs of a data analysts. Statistical inference offers a framework, as well as several practical tools, for doing this. The first step is to learn how to mathematically describe random variables. 
+In data science, we often deal with data that is affected by chance in some way: the data comes from a random sample, the data is affected by measurement error, or the data measures some outcome that is random in nature. Being able to quantify the uncertainty introduced by randomness is one of the most important jobs of a data analyst. Statistical inference offers a framework, as well as several practical tools, for doing this. The first step is to learn how to mathematically describe random variables. 
 
-In this chapter, we introduce random variables and their properties starting with their application to games of chance. We then describe some of the events surrounding the [financial crisis of 2007-2008](https://en.wikipedia.org/wiki/Financial_crisis_of_2007%E2%80%9308) using probability theory. This financial crisis was in part caused by underestimating the risk of certain [securities](https://en.wikipedia.org/wiki/Security_(finance)) sold by financial institutions. Specifically, the risks of mortgage-backed securities (MBS) and collateralized debt obligations (CDO) were grossly underestimated. These assets were sold at prices that assumed most homeowners would make their monthly payments, and the probability of this not occurring was calculated as being low. A combination of factors resulted in many more defaults than were expected, which led to a price crash of these securities. As a consequence, banks lost so much money that they needed government bailouts to avoid closing down completely.
+In this chapter, we introduce random variables and their properties starting with their application to games of chance. We then describe some of the events surrounding the financial crisis of 2007-2008^[https://en.wikipedia.org/w/index.php?title=Financial_crisis_of_2007%E2%80%932008] using probability theory. This financial crisis was in part caused by underestimating the risk of certain securities^[https://en.wikipedia.org/w/index.php?title=Security_(finance)] sold by financial institutions. Specifically, the risks of mortgage-backed securities (MBS) and collateralized debt obligations (CDO) were grossly underestimated. These assets were sold at prices that assumed most homeowners would make their monthly payments, and the probability of this not occurring was calculated as being low. A combination of factors resulted in many more defaults than were expected, which led to a price crash of these securities. As a consequence, banks lost so much money that they needed government bailouts to avoid closing down completely.
 
 ## Random variables
 
@@ -34,7 +34,7 @@ Sometimes it's 1 and sometimes it's 0.
 
 ## Sampling models
 
-Many data generation procedures, those that produce the data we study, can be modeled quite well as draws from a urn. For instance, we can model the process of polling likely voters as drawing 0s (Republicans) and 1s (Democrats) from an urn containing the 0 and 1 code for all likely voters. In epidemiological studies, we often assume that the subjects in our study are a random sample from the population of interest. The data related to a specific outcome can be modeled as a random sample from an urn containing the outcome for the entire population of interest. Similarly, in experimental research, we often assume that the individual organisms we are studying, for example worms, flies, or mice, are a random sample from a larger population. Randomized experiments can also be modeled by draws from an urn given the way individuals are assigned into groups: when getting assigned, you draw your group at random. Sampling models are therefore ubiquitous in data science. Casino games offer a plethora of examples of real world situations in which sampling models are used to answer specific questions. We will therefore start with such examples.
+Many data generation procedures, those that produce the data we study, can be modeled quite well as draws from an urn. For instance, we can model the process of polling likely voters as drawing 0s (Republicans) and 1s (Democrats) from an urn containing the 0 and 1 code for all likely voters. In epidemiological studies, we often assume that the subjects in our study are a random sample from the population of interest. The data related to a specific outcome can be modeled as a random sample from an urn containing the outcome for the entire population of interest. Similarly, in experimental research, we often assume that the individual organisms we are studying, for example worms, flies, or mice, are a random sample from a larger population. Randomized experiments can also be modeled by draws from an urn given the way individuals are assigned into groups: when getting assigned, you draw your group at random. Sampling models are therefore ubiquitous in data science. Casino games offer a plethora of examples of real-world situations in which sampling models are used to answer specific questions. We will therefore start with such examples.
 
 Suppose a very small casino hires you to consult on whether they should set up roulette wheels. To keep the example simple, we will assume that 1,000 people will play and that the only game you can play on the roulette wheel is to bet on red or black. The casino wants you to predict how much money they will make or lose. They want a range of values and, in particular, they want to know what's the chance of losing money. If this probability is too high, they will pass on installing roulette wheels.
 
@@ -91,28 +91,15 @@ Now we can ask the following: in our simulations, how often did we get sums less
 mean(S <= a)
 ```
 
-This will be a very good approximation of $F(a)$. In fact, we can visualize the distribution by creating a histogram showing the probability $F(b)-F(a)$ for several intervals $(a,b]$:
+This will be a very good approximation of $F(a)$ and we can easily answer the casino's question: how likely is it that we will lose money? We can see it is quite low:
 
-```{r sum-density, echo=FALSE}
-data.frame(S) %>% ggplot(aes(S, ..density..)) + geom_histogram(color = "black", binwidth = 10)  + ylab("Probability")
-```
-
-Now we can easily answer the casino's question: how likely is it that we will lose money?
 
 ```{r}
 mean(S<0)
 ```
 
-We can see it is quite low.
 
-In the histogram above, we see that the distribution appears to be approximately normal. A qq-plot will confirm that the normal approximation is close to perfect. If, in fact, the distribution is normal, then all we need to define the distribution is the average and the standard deviation. Because we have the original values from which the distribution is created, we can easily compute these:
-
-```{r}
-mean(S)
-sd(S)
-```
-
-If we add a normal density with this average and standard deviation to the histogram above, we see that it matches very well:
+We can visualize the distribution of $S$ by creating a histogram showing the probability $F(b)-F(a)$ for several intervals $(a,b]$: 
 
 ```{r normal-approximates-distribution, echo=FALSE}
 s <- seq(min(S), max(S), length = 100)
@@ -122,6 +109,8 @@ data.frame(S=S) %>% ggplot(aes(S, ..density..)) +
   ylab("Probability") + 
   geom_line(data = normal_density, mapping=aes(s,f), color="blue")
 ```
+
+We see that the distribution appears to be approximately normal. A qq-plot will confirm that the normal approximation is close to a perfect approximation for this distribution. If, in fact, the distribution is normal, then all we need to define the distribution is the average and the standard deviation. Because we have the original values from which the distribution is created, we can easily compute these with `mean(S)` and `sd(S)`. The blue curve you see added to the histogram above is a normal density with this average and standard deviation. 
 
 This average and this standard deviation have special names. They are referred to as the _expected value_ and _standard error_ of the random variable $S$. We will say more about these in the next section. 
 
@@ -144,7 +133,7 @@ Because this is a discrete probability function, to get $\mbox{Pr}(S < 0)$ rathe
 pbinom(n/2-1, size = n, prob = 10/19)
 ```
 
-For the details of the binomial distribution, you can consult any basic probability book or even [Wikipedia](https://en.wikipedia.org/wiki/Binomial_distribution). 
+For the details of the binomial distribution, you can consult any basic probability book or even Wikipedia^[https://en.wikipedia.org/w/index.php?title=Binomial_distribution].
 
 Here we do not cover these details. Instead, we will discuss an incredibly useful approximation provided by mathematical theory that applies generally to sums and averages of draws from any urn: the Central Limit Theorem (CLT).
 
@@ -166,7 +155,7 @@ Another way to think about it that does not involve an urn is to run a Monte Car
 
 ## Notation for random variables
 
-In statistical textbooks, upper case letters are used to denote random variables and we follow this convention here. Lower case letters are used for observed values. You will see some notation that includes both. For example, you will see events defined as $X \leq x$. Here $X$ is a random variable, making it a random event, and $x$ is an arbitrary value and not random. So, for example, $X$ might represent the number on a die roll and $x$ will represent an actual value we see 1, 2, 3, 4, 5 or 6. So in this case, the probability of $X=x$ is 1/6 regardless of the observed value $x$. This notation is a bit strange because, when we ask questions about probability, $X$ is not an observed quantity. Instead, it's a random quantity that we will see in the future. We can talk about what we expect it to be, what values are probable, but not what it is. But once we have data, we do see a realization of $X$. So data scientists talk of what could have been after we see what actually happened. 
+In statistical textbooks, upper case letters are used to denote random variables and we follow this convention here. Lower case letters are used for observed values. You will see some notation that includes both. For example, you will see events defined as $X \leq x$. Here $X$ is a random variable, making it a random event, and $x$ is an arbitrary value and not random. So, for example, $X$ might represent the number on a die roll and $x$ will represent an actual value we see 1, 2, 3, 4, 5, or 6. So in this case, the probability of $X=x$ is 1/6 regardless of the observed value $x$. This notation is a bit strange because, when we ask questions about probability, $X$ is not an observed quantity. Instead, it's a random quantity that we will see in the future. We can talk about what we expect it to be, what values are probable, but not what it is. But once we have data, we do see a realization of $X$. So data scientists talk of what could have been after we see what actually happened. 
 
 
 ## The expected value and standard error
@@ -220,7 +209,7 @@ $$
 \sqrt{\mbox{number of draws }} \times \mbox{ standard deviation of the numbers in the urn}
 $$
 
-Using the definition of standard deviation, we can derive, with a bit of math, that if an urn contains two values $a$ and $b$ with proportions $p$ and $(1-p)$ respectively, the standard deviation is: 
+Using the definition of standard deviation, we can derive, with a bit of math, that if an urn contains two values $a$ and $b$ with proportions $p$ and $(1-p)$, respectively, the standard deviation is: 
 
 $$\mid b - a \mid \sqrt{p(1-p)}.$$
 
@@ -290,7 +279,7 @@ For all the theory discussed here, you need to compute the actual standard devia
 sqrt(mean((x-m)^2))
 ```
 
-So be careful when using the `sd` function in R. However, keep in mind that throughout the book we sometimes use the `sd` function when we really want the actual SD. This is because when the list size is big, these two are practically equivalent since $\sqrt{(N-1)/N}$ is close to 1.
+So be careful when using the `sd` function in R. However, keep in mind that throughout the book we sometimes use the `sd` function when we really want the actual SD. This is because when the list size is big, these two are practically equivalent since $\sqrt{(N-1)/N} \approx 1$.
 
 ## Central Limit Theorem
 
@@ -340,60 +329,62 @@ mean(S < 0)
 ```
 
 
-### How large is large in the Central Limit Theorem
+### How large is large in the Central Limit Theorem?
 
 The CLT works when the number of draws is large. But large is a relative term. In many circumstances as few as 30 draws is enough to make the CLT useful. In some specific instances, as few as 10 is enough. However, these should not be considered general rules. Note, for example, that when the probability of success is very small, we need much larger sample sizes. 
 
 By way of illustration, let's consider the lottery. In the lottery, the chances of winning are less than 1 in a million. Thousands of people play so the number of draws is very large. Yet the number of winners, the sum of the draws, range between 0 and 4. This sum is certainly not well approximated by a normal distribution, so the CLT does not apply, even with the very large sample size. This is generally true when the probability of a success is very low. In these cases, the Poisson distribution is more appropriate. 
 
-You can examine the properties of the Poisson distribution using `dpois` and `ppois`. You can generate random variables following this distribution with `rpois`. However, we do not cover the theory here. You can learn about the Poisson distribution in any probability textbook and even [Wikipedia](https://en.wikipedia.org/wiki/Poisson_distribution).
+You can examine the properties of the Poisson distribution using `dpois` and `ppois`. You can generate random variables following this distribution with `rpois`. However, we do not cover the theory here. You can learn about the Poisson distribution in any probability textbook and even Wikipedia^[https://en.wikipedia.org/w/index.php?title=Poisson_distribution]
 
 
 ## Statistical properties of averages
 
-There are serveal useful mathematical results that we used above and often employ when working with data. We list them below.
+There are several useful mathematical results that we used above and often employ when working with data. We list them below.
 
-1. The expected value of the sum of random variables is the sum of each random variable's expected value. We can write it like this:
-    
-    $$ 
-    \mbox{E}[X_1+X_2+\dots+X_n] =  \mbox{E}[X_1] + \mbox{E}[X_2]+\dots+\mbox{E}[X_n]
-    $$
-    
-    If the $X$ are independent draws from the urn, then they all have the same expected value. Let's call it $\mu$ and thus:
-    
-    $$ 
-    \mbox{E}[X_1+X_2+\dots+X_n]=  n\mu
-    $$
-    
-    which is another way of writing the result we show above for the sum of draws.
-    
-2. The expected value of a non-random constant times a random variable is the non-random constant times the expected value of a random variable. This is easier to explain with symbols:
-    $$
-    \mbox{E}[aX] =  a\times\mbox{E}[X]
-    $$
-    
-    To see why this is intuitive, consider change of units. If we change the units of a random variable, say from dollars to cents, the expectation should change in the same way. A consequence of the above two facts is that the expected value of the average of independent draws from the same urn is the expected value of the urn, call it $\mu$ again:
-    
-    $$
-    \mbox{E}[(X_1+X_2+\dots+X_n) / n]=   \mbox{E}[X_1+X_2+\dots+X_n] / n = n\mu/n = \mu 
-    $$
-    
+1\. The expected value of the sum of random variables is the sum of each random variable's expected value. We can write it like this:
 
-3. The square of the standard error of the sum of **independent** random variables is the sum of the square of the standard error of each random variable. This one is easier to understand in math form:
-    $$ 
-    \mbox{SE}[X_1+X_2+\dots+X_n] = \sqrt{\mbox{SE}[X_1]^2 + \mbox{SE}[X_2]^2+\dots+\mbox{SE}[X_n]^2  }
-    $$
-    
-    The square of the standard error is referred to as the _variance_ in statistical textbooks. Note that this particular property is not as intuitive as the previous three and more in depth explanations can be found in Statistics textbooks.
+$$ 
+\mbox{E}[X_1+X_2+\dots+X_n] =  \mbox{E}[X_1] + \mbox{E}[X_2]+\dots+\mbox{E}[X_n]
+$$
+
+If the $X$ are independent draws from the urn, then they all have the same expected value. Let's call it $\mu$ and thus:
+
+$$ 
+\mbox{E}[X_1+X_2+\dots+X_n]=  n\mu
+$$
+
+which is another way of writing the result we show above for the sum of draws.
+
+2\. The expected value of a non-random constant times a random variable is the non-random constant times the expected value of a random variable. This is easier to explain with symbols:
+
+$$
+\mbox{E}[aX] =  a\times\mbox{E}[X]
+$$
+
+To see why this is intuitive, consider change of units. If we change the units of a random variable, say from dollars to cents, the expectation should change in the same way. A consequence of the above two facts is that the expected value of the average of independent draws from the same urn is the expected value of the urn, call it $\mu$ again:
+
+$$
+\mbox{E}[(X_1+X_2+\dots+X_n) / n]=   \mbox{E}[X_1+X_2+\dots+X_n] / n = n\mu/n = \mu 
+$$
+
+
+3\. The square of the standard error of the sum of **independent** random variables is the sum of the square of the standard error of each random variable. This one is easier to understand in math form:
+
+$$ 
+\mbox{SE}[X_1+X_2+\dots+X_n] = \sqrt{\mbox{SE}[X_1]^2 + \mbox{SE}[X_2]^2+\dots+\mbox{SE}[X_n]^2  }
+$$
+
+The square of the standard error is referred to as the _variance_ in statistical textbooks. Note that this particular property is not as intuitive as the previous three and more in depth explanations can be found in statistics textbooks.
  
-4. The standard error of a non-random constant times a random variable is the non-random constant times the random variable's standard error. As with the expectation:
-    $$
-    \mbox{SE}[aX] =  a \times \mbox{SE}[X]
-    $$
- 
-    To see why this is intuitive, again think of units. 
-    
-    A consequence of 3 and 4 is that the standard error of the average of independent draws from the same urn is the standard deviation of the urn divided by the square root of $n$ (the number of draws), call it $\sigma$:
+4\. The standard error of a non-random constant times a random variable is the non-random constant times the random variable's standard error. As with the expectation:
+$$
+\mbox{SE}[aX] =  a \times \mbox{SE}[X]
+$$
+
+To see why this is intuitive, again think of units. 
+
+A consequence of 3 and 4 is that the standard error of the average of independent draws from the same urn is the standard deviation of the urn divided by the square root of $n$ (the number of draws), call it $\sigma$:
 
 $$
 \begin{aligned}
@@ -406,10 +397,10 @@ $$
 $$  
   
     
-5. If $X$ is a normally distributed random variable, then if $a$ and $b$ are non-random constants, $aX + b$ is also a normally distributed random variable. All we are doing is changing the units of the random variable by multiplying by $a$, then shifting the center by $b$. 
+5\. If $X$ is a normally distributed random variable, then if $a$ and $b$ are non-random constants, $aX + b$ is also a normally distributed random variable. All we are doing is changing the units of the random variable by multiplying by $a$, then shifting the center by $b$. 
 
 
-Note that statistical textbooks use the Greek letters $\mu$ and $\sigma$ to denote the expected value and standard error respectively. This is because $\mu$ is the Greek letter for $m$, the first letter of _mean_, which is another term used for expected value. Similarly, $\sigma$ is the Greek letter for $s$, the first letter of standard error. 
+Note that statistical textbooks use the Greek letters $\mu$ and $\sigma$ to denote the expected value and standard error, respectively. This is because $\mu$ is the Greek letter for $m$, the first letter of _mean_, which is another term used for expected value. Similarly, $\sigma$ is the Greek letter for $s$, the first letter of standard error. 
 
 ## Law of large numbers
 
@@ -427,69 +418,64 @@ Another funny misuse of the law of averages is in sports when TV sportscasters p
 ## Exercises
 
 
-1. In American Roulette you can also bet on green. There are 18 reds, 18 blacks and 2 greens (0 and 00). What are the chances the green comes out?
+1\. In American Roulette you can also bet on green. There are 18 reds, 18 blacks and 2 greens (0 and 00). What are the chances the green comes out?
 
 
-2. The payout for winning on green is \$17 dollars. This means that if you bet a dollar and it lands on green, you get \$17. Create a sampling model using sample to simulate the random variable $X$ for your winnings. Hint: see the example below for how it should look like when betting on red.
+2\. The payout for winning on green is \$17 dollars. This means that if you bet a dollar and it lands on green, you get \$17. Create a sampling model using sample to simulate the random variable $X$ for your winnings. Hint: see the example below for how it should look like when betting on red.
 
-    ```{r}
-    x <- sample(c(1,-1), 1, prob = c(9/19, 10/19))
-    ```
-3. Compute the expected value of $X$.
+```{r}
+x <- sample(c(1,-1), 1, prob = c(9/19, 10/19))
+```
+
+3\. Compute the expected value of $X$.
 
 
-4. Compute the standard error of $X$.
+4\. Compute the standard error of $X$.
 
     
-5. Now create a random variable $S$ that is the sum of your winnings after betting on green 1000 times. Hint: change the argument `size` and `replace` in your answer to question 2. Start your code by setting the seed to 1 with `set.seed(1)`.
+5\. Now create a random variable $S$ that is the sum of your winnings after betting on green 1000 times. Hint: change the argument `size` and `replace` in your answer to question 2. Start your code by setting the seed to 1 with `set.seed(1)`.
 
-6. What is the expected value of $S$?
-
-
-7. What is the standard error of $S$?
+6\. What is the expected value of $S$?
 
 
-8. What is the probability that you end up winning money? Hint: use the CLT.
+7\. What is the standard error of $S$?
 
 
-9. Create a Monte Carlo simulation that generates 1,000 outcomes of $S$. Compute the average and standard deviation of the resulting list to confirm the results of 6 and 7. Start your code by setting the seed to 1 with `set.seed(1)`.
+8\. What is the probability that you end up winning money? Hint: use the CLT.
+
+
+9\. Create a Monte Carlo simulation that generates 1,000 outcomes of $S$. Compute the average and standard deviation of the resulting list to confirm the results of 6 and 7. Start your code by setting the seed to 1 with `set.seed(1)`.
 
 
 
 
-10. Now check your answer to 8 using the Monte Carlo result. 
+10\. Now check your answer to 8 using the Monte Carlo result. 
 
-11. The Monte Carlo result and the CLT approximation are close, but not that close. What could account for this?
-    
-    A. 1,000 simulations is not enough. If we do more, they match.
-    
-    B. The CLT does not work as well when the probability of success is small. In this case, it was 1/19. If we make the number of roulette plays bigger, they will match better.
+11\. The Monte Carlo result and the CLT approximation are close, but not that close. What could account for this?
 
-    C. The difference is within rounding error.
-    
-    D. The CLT only works for averages.
+a. 1,000 simulations is not enough. If we do more, they match.
+b. The CLT does not work as well when the probability of success is small. In this case, it was 1/19. If we make the number of roulette plays bigger, they will match better.
+c. The difference is within rounding error.
+d. The CLT only works for averages.
 
 
-12. Now create a random variable $Y$ that is your average winnings per bet after playing off your winnings after betting on green 1,000 times.
+12\. Now create a random variable $Y$ that is your average winnings per bet after playing off your winnings after betting on green 1,000 times.
 
-13. What is the expected value of $Y$?
+13\. What is the expected value of $Y$?
 
-14. What is the standard error of $Y$?
+14\. What is the standard error of $Y$?
 
-15. What is the probability that you end up with winnings per game that are positive? Hint: use the CLT.
+15\. What is the probability that you end up with winnings per game that are positive? Hint: use the CLT.
 
 
-16. Create a Monte Carlo simulation that generates 2,500 outcomes of $Y$. Compute the average and standard deviation of the resulting list to confirm the results of 6 and 7. Start your code by setting the seed to 1 with `set.seed(1)`.
+16\. Create a Monte Carlo simulation that generates 2,500 outcomes of $Y$. Compute the average and standard deviation of the resulting list to confirm the results of 6 and 7. Start your code by setting the seed to 1 with `set.seed(1)`.
 
-17. Now check your answer to 8 using the Monte Carlo result. 
+17\. Now check your answer to 8 using the Monte Carlo result. 
 
-18. The Monte Carlo result and the CLT approximation are now much closer.  What could account for this?
+18\. The Monte Carlo result and the CLT approximation are now much closer.  What could account for this?
 
-    A. We are now computing averages instead of sums.
-    
-    B. 2,500 Monte Carlo simulations is not better than 1,000.
-    
-    C. The CLT works better when the sample size is larger. We increased from 1,000 to 2,500.
-    
-    D. It is not closer. The difference is within rounding error.
+a. We are now computing averages instead of sums.
+b. 2,500 Monte Carlo simulations is not better than 1,000.
+c. The CLT works better when the sample size is larger. We increased from 1,000 to 2,500.
+d. It is not closer. The difference is within rounding error.
 

@@ -2,12 +2,16 @@ book_filename: "book"
 output_dir: "docs"
 delete_merged_file: true
 language:
+  label:
+    fig: "FIGURE "
+    tab: "TABLE "
   ui:
+    edit: "Edit"
     chapter_name: "Chapter "
+
 rmd_files: [
   "index.Rmd",
   "intro.Rmd",
-  "R/installing-r-and-rstudio.Rmd",
   "R/getting-started.Rmd",
   "R/R-basics.Rmd",
   "R/programming-basics.Rmd",
@@ -63,10 +67,12 @@ rmd_files: [
   "ml/recommendation-systems.Rmd",
   "ml/clustering.Rmd",
   "productivity/productivity-intro.Rmd",
+  "R/installing-r-and-rstudio.Rmd",
   "productivity/installing-git.Rmd",
   "productivity/unix.Rmd",
   "productivity/git.Rmd",
-  "productivity/reproducible-projects.Rmd"]
+  "productivity/reproducible-projects.Rmd"
+]
 
 before_chapter_script: "_common.R"
 
